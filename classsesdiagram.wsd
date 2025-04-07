@@ -1,0 +1,158 @@
+@startuml
+' Основной класс формы
+class MainForm {
+  +TextBox inputTextBox
+  +Button analyzeButton
+  +Button clearButton
+  +Button loadFileButton
+  +Label totalWordsLabel
+  +Label topWordsLabel
+  +Label topCharsLabel
+  +Label spacesLabel
+  +Label sentencesLabel
+  +Label avgWordLengthLabel
+  +Label avgSentenceLengthLabel
+  +Label textSizeLabel
+
+  +void AnalyzeButton_Click()
+  +void ClearButton_Click()
+  +void LoadFileButton_Click()
+  -void UpdateStatsUI()
+  -void ShowError(string message)
+}
+
+' Класс анализатора текста
+class TextAnalyzer {
+  +int TotalWords
+  +int TotalSpaces
+  +int TotalSentences
+  +double AvgWordLength
+  +double AvgSentenceLength
+  +int TextSizeBytes
+  +Dictionary<string, int> WordFrequency
+  +Dictionary<char, int> CharFrequency
+
+  +void Analyze(string text)
+  -List<string> ExtractWords(string text)
+  -List<string> ExtractSentences(string text)
+  -void CalculateWordStats(List<string> words)
+  -void CalculateCharStats(string text)
+  -void CalculateSentenceStats(List<string> sentences)
+}
+
+' Класс для работы с файлами
+class FileHandler {
+  +string LoadText(string path)
+  +bool ValidateFileSize(string path)
+  +bool ValidateFileType(string path)
+  -const int MaxSize = 1048576
+}
+
+' Связи между классами
+MainForm --> TextAnalyzer : использует для анализа
+MainForm --> FileHandler : использует для загрузки
+MainForm --> "System.Windows.Forms" : наследует от Form
+MainForm --> "System.Drawing" : использует для размещения элементов
+TextAnalyzer --> "System.Collections.Generic" : использует Dictionary<>
+FileHandler --> "System.IO" : использует File.ReadAllText
+
+note top of MainForm
+  Отвечает за:
+  - Ввод/вывод данных
+  - Управление кнопками
+  - Отображение статистики
+  - Обработку ошибок
+end note
+
+note right of MainForm
+  **Поля и Свойства:**
+  +TextBox inputTextBox: Поле для ввода или отображения анализируемого текста.
+  +Button analyzeButton: Кнопка для запуска процесса анализа текста.
+  +Button clearButton: Кнопка для очистки поля ввода и результатов анализа.
+  +Button loadFileButton: Кнопка для вызова диалога выбора и загрузки текстового файла.
+  +Label totalWordsLabel: Метка для отображения общего количества слов.
+  +Label topWordsLabel: Метка для отображения самых часто встречающихся слов.
+  +Label topCharsLabel: Метка для отображения самых часто встречающихся символов.
+  +Label spacesLabel: Метка для отображения общего количества пробелов.
+  +Label sentencesLabel: Метка для отображения общего количества предложений.
+  +Label avgWordLengthLabel: Метка для отображения средней длины слова.
+  +Label avgSentenceLengthLabel: Метка для отображения средней длины предложения.
+  +Label textSizeLabel: Метка для отображения размера текста в байтах.
+
+  **Методы:**
+  +void AnalyzeButton_Click(): Обработчик события нажатия кнопки "Analyze", запускает анализ.
+  +void ClearButton_Click(): Обработчик события нажатия кнопки "Clear", очищает форму.
+  +void LoadFileButton_Click(): Обработчик события нажатия кнопки "Load File", загружает текст из файла.
+  -void UpdateStatsUI(): Приватный метод для обновления всех меток (Label) на форме результатами анализа.
+  -void ShowError(string message): Приватный метод для показа окна с сообщением об ошибке.
+end note
+
+note top of TextAnalyzer
+  Содержит логику:
+  - Разбивка текста на слова/предложения
+  - Подсчет статистики
+  - Расчет средних значений
+  - Частотный анализ
+end note
+
+note right of TextAnalyzer
+  **Поля и Свойства:**
+  +int TotalWords: Хранит общее количество найденных слов в тексте.
+  +int TotalSpaces: Хранит общее количество найденных пробельных символов.
+  +int TotalSentences: Хранит общее количество найденных предложений.
+  +double AvgWordLength: Хранит вычисленную среднюю длину слова.
+  +double AvgSentenceLength: Хранит вычисленную среднюю длину предложения.
+  +int TextSizeBytes: Хранит размер анализируемого текста в байтах.
+  +Dictionary<string, int> WordFrequency: Словарь для хранения частоты встречаемости каждого слова (слово -> количество).
+  +Dictionary<char, int> CharFrequency: Словарь для хранения частоты встречаемости каждого символа (символ -> количество).
+  **Методы:**
+  +void Analyze(string text): Основной метод, выполняющий полный анализ переданного текста.
+  -List<string> ExtractWords(string text): Приватный метод, извлекающий из текста список отдельных слов.
+  -List<string> ExtractSentences(string text): Приватный метод, извлекающий из текста список отдельных предложений.
+  -void CalculateWordStats(List<string> words): Приватный метод, вычисляющий статистику по словам (количество, средняя длина, частота).
+  -void CalculateCharStats(string text): Приватный метод, вычисляющий статистику по символам (пробелы, частота).
+  -void CalculateSentenceStats(List<string> sentences): Приватный метод, вычисляющий статистику по предложениям (количество, средняя длина).
+
+  Поддержка Unicode:
+  - Анализ любых символов UTF-16
+  - Корректная обработка многоязычных текстов
+end note
+
+note top of FileHandler
+  Реализует:
+  - Загрузку текста из файла
+  - Проверку размера (1 МБ)
+  - Проверку расширения (.txt)
+end note
+
+note right of FileHandler
+  **Поля и Свойства:**
+  -const int MaxSize = 1048576: Константа, определяющая максимальный допустимый размер файла в байтах (1 Мегабайт).
+
+  **Методы:**
+  +string LoadText(string path): Загружает и возвращает текстовое содержимое файла по указанному пути.
+  +bool ValidateFileSize(string path): Проверяет, не превышает ли размер файла по указанному пути установленный лимит `MaxSize`.
+  +bool ValidateFileType(string path): Проверяет, имеет ли файл по указанному пути допустимое расширение (например, ".txt").
+end note
+
+note bottom of "System.Windows.Forms"
+  **System.Windows.Forms**:
+  Предоставляет классы для создания приложений Windows с богатым пользовательским интерфейсом (формы, кнопки, метки, текстовые поля и т.д.). `MainForm` наследуется от `Form` из этой библиотеки.
+end note
+
+note bottom of "System.Drawing"
+  **System.Drawing**:
+  Предоставляет доступ к базовой графической функциональности GDI+; используется `System.Windows.Forms` для отрисовки и размещения элементов управления.
+end note
+
+note bottom of "System.Collections.Generic"
+  **System.Collections.Generic**:
+  Содержит классы для работы с обобщенными коллекциями, такими как `Dictionary<TKey, TValue>`, который используется в `TextAnalyzer` для хранения частоты слов и символов.
+end note
+
+note bottom of "System.IO"
+  **System.IO**:
+  Содержит классы для выполнения операций ввода-вывода, включая работу с файлами и потоками; используется `FileHandler` для чтения содержимого файла (`File.ReadAllText`) и получения информации о файле.
+end note
+
+@enduml
